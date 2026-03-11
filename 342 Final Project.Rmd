@@ -32,7 +32,28 @@ Provide an introduction with background information.
 # Statistical Methods
 
 ## Model
-Describe the statistical model used.
+Suppose we define the random variable T as the number in the Vaccine group from the n = 170 Covid 19 cases
+
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Group & Cases & Sample Size \\
+        \hline
+        BNT162b2 & 2 & 17411 \\
+        \hline
+        Placebo & 168 & 17511 \\
+        \hline
+        Total & 170 & 34922 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+The distribution of T can be well approximated by a binomial distribution which is proved in the appendix
+
+Then,
+
+$$T \sim Binom(n = 170, \pi) $$
+Where $\pi$ = P(vaccine | Covid 19 Case) 
 
 ## Likelihood Inference
 Detail the likelihood approach.
