@@ -1,5 +1,5 @@
 ---
-title: "Your Paper Title Here"
+title: ""
 author: "Your Name(s)"
 date: Date
 output: pdf_document
