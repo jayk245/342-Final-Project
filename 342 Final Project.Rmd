@@ -1,6 +1,6 @@
 ---
 title: ""
-author: "Your Name(s)"
+author: "Joe Clair, Jay Kumar, and Andrew Tang"
 date: Date
 output: pdf_document
 urlcolor: blue
