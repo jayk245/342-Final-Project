@@ -59,7 +59,67 @@ Where $\pi$ = P(vaccine | Covid 19 Case)
 Detail the likelihood approach.
 
 ## Bayesian Inference
-Detail the Bayesian approach.
+
+Under our prior beliefs,
+\begin{align*}
+P (\psi \geq 0.3) = 0.1, \ \ \ P (\psi \geq 0) = 0.6.
+\end{align*}
+
+When $\psi = 0.3$,
+\begin{align*}
+\pi = \frac{1-0.3}{2-0.3} = \frac{0.7}{1.7} = \frac{7}{17}.
+\end{align*}
+Thus,
+\begin{align*}
+P(\psi \geq 0.3) = 0.1
+\quad \Longleftrightarrow \quad
+P\left(\pi \leq \frac{7}{17}\right) = 0.1.
+\end{align*}
+
+When $\psi = 0$,
+\begin{align*}
+\pi = \frac{1-0}{2-0} = \frac{1}{2}.
+\end{align*}
+Thus,
+\begin{align*}
+P(\psi \geq 0) = 0.6
+\quad \Longleftrightarrow \quad
+P\left(\pi \leq \frac{1}{2}\right) = 0.6.
+\end{align*}
+
+So, our conditions for $\pi$ are
+\begin{align*}
+P\left(\pi \leq \frac{7}{17}\right) = 0.1,
+\qquad
+P\left(\pi \leq \frac{1}{2}\right) = 0.6.
+\end{align*}
+
+Using this to create a beta distribution gives $Beta (36.40, 38.58)$ as the prior.
+```{r}
+library(LearnBayes)
+
+beta.select(
+  quantile1 = list(p = 0.10, x = 7/17),
+  quantile2 = list(p = 0.60, x = 0.50)
+)
+```
+Because the Beta distribution is conjugate to the Binomial, the posterior distribution of $\pi$ is also a Beta distribution. 
+\[
+T \mid \pi \sim \text{Binomial}(n,\pi)
+\]
+and
+\[
+\pi \sim \text{Beta}(a,b),
+\]
+then the posterior distribution is
+\[
+\pi \mid T=t \sim \text{Beta}(a+t,\; b+n-t).
+\]
+For our data, $n=170$ and $t=8$, so the posterior distribution is
+\[
+\pi \mid T=8 \sim \text{Beta}(a+8,\; b+162).
+\]
+
 
 # Results
 Present your findings. 
