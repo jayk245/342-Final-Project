@@ -164,6 +164,8 @@ Present your findings.
 # Discussion / Conclusion
 Discuss / conclude here.
 
+##Comment in here about Senn (2021), and how despite criticizing that the prior was reverse engineered around the 30% FDA Threshold, the data was so strong that we still get the same values.
+
 # Bibliography
 
 Baden, L. R., El Sahly, H. M., Essink, B., Kotloff, K., Frey, S., Novak, R., ... & Zaks, T. (2021). Efficacy and safety of the mRNA-1273 SARS-CoV-2 vaccine. *New England Journal of Medicine*, 384(5), 403--416.
