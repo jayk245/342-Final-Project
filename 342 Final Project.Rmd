@@ -1,8 +1,10 @@
 ---
-title: "Changed"
+title: "Priors, P-values, and Pfizer: Reanalyzing the BNT162b2 Vaccine Efficacy Trial"
 author: "Joe Clair, Jay Kumar, and Andrew Tang"
-date: Date
-output: pdf_document
+date: "March 10, 2026"
+output:
+  html_document:
+    df_print: paged
 urlcolor: blue
 header-includes:
 - \usepackage{amsmath,amsfonts,amssymb}
@@ -18,12 +20,39 @@ fontsize: 11pt
 Write your abstract here.
 
 # Keywords
-*Keyword 1*, *Keyword 2*, *Keyword 3*, *Keyword 4*
+*Vaccine Efficacy*, *COVID-19*, *Prior Elicitation*, *Bayesian Analysis*
 
 \newpage
 
 # Introduction / Background
-Provide an introduction with background information.
+
+The COVID-19 pandemic, caused by SARS-CoV-2, was one of the most disruptive global health crises 
+in modern history. The pandemic impacted global health substantially by not only claiming an estimated 7.1 million 
+lives worldwide (WHO, 2022), but also triggering widespread economic disruption and social issues, 
+including school closures and lockdowns across the globe.
+
+In response, Pfizer and BioNTech developed BNT162b2, a two-dose mRNA vaccine, which was a new approach 
+compared to traditional vaccine platforms. The vaccine received FDA Emergency Use Authorization in 
+December 2020 after a large-scale randomized, double-blind, placebo-controlled Phase 3 trial 
+(Polack et al., 2020). The trial was designed to run until 170 confirmed COVID-19 cases were observed, 
+ultimately enrolling 34,922 participants split equally between vaccine and placebo groups. Vaccine 
+efficacy $\psi$, defined as the proportional reduction in infection risk relative to placebo, must 
+exceed 30% to meet FDA minimum approval standards. The results are summarized in Table 1 below.
+
+#Add table here? It says so in the instructions
+
+To evaluate vaccine efficacy, each company who developed a vaccine employed statistical methods to analyze their data. 
+Pfizer used a Bayesian beta-binomial model and reported 95% efficacy (Polack et al., 2020), while another company,
+Moderna, modeled their data using a frequentist approach on a similar mRNA vaccine and reported 
+94.1% efficacy (Baden et al., 2021). The fact that two different statistical frameworks applied to 
+similar mRNA vaccines had similar conclusions was promising, suggesting the high efficacy 
+of this mRNA holds strong no matter the statistical framework. However, Pfizer's Bayesian analysis did 
+not go without scrutiny. Senn (2021) argues that their prior distribution was
+reverse-engineered from the FDA's 30% threshold rather than reflecting genuine pre-trial belief. 
+We therefore independently reanalyze the Pfizer trial data using both Bayesian and frequentist 
+methods, this time using a prior that is more in line with the Bayesian framework of eliciting our prior beliefs. After our test is done, we will see if the same conclusions hold. Specifically, we test:
+
+$$H_0: \psi = 0.30 \quad \text{vs} \quad H_1: \psi > 0.30$$
 
 ```{r label="important_R_code", eval=TRUE, echo=FALSE}
 # You can reference your code in the appendix (sample here).
@@ -59,6 +88,14 @@ Where $\pi$ = P(vaccine | Covid 19 Case)
 Detail the likelihood approach.
 
 ## Bayesian Inference
+
+Before seeing the data, we set two prior beliefs about vaccine efficacy $\psi$. We chose 
+$P(\psi \geq 0.3) = 0.10$ because mRNA vaccines had never been approved before, and most 
+Phase 3 vaccine trials fail, so we were skeptical the vaccine would clear the FDA's 30% bar. 
+We chose $P(\psi \geq 0) = 0.60$ given promising immune responses observed in Phase 1/2 trials (Polack et al., 2020). Following Senn (2021), who argues Pfizer's prior was reverse-engineered from the FDA 
+threshold rather than reflecting real prior beliefs, we created our beliefs directly 
+rather than working backwards from the approval standard. We now will use the `beta.select` function in R in order
+to generate a beta distribution from our new prior beliefs.
 
 Under our prior beliefs,
 \begin{align*}
@@ -129,13 +166,15 @@ Discuss / conclude here.
 
 # Bibliography
 
-Brown, B. (2024). *Lecture Title*. Lecture slides, Course Name, University Name.
+Baden, L. R., El Sahly, H. M., Essink, B., Kotloff, K., Frey, S., Novak, R., ... & Zaks, T. (2021). Efficacy and safety of the mRNA-1273 SARS-CoV-2 vaccine. *New England Journal of Medicine*, 384(5), 403--416.
 
-Doe, J. (2020). Title of the Paper. *Journal Name*, 12(3), 45-67.
+Polack, F. P., Thomas, S. J., Kitchin, N., Absalon, J., Gurtman, A., Lockhart, S., ... & Jansen, K. U. (2020). Safety and efficacy of the BNT162b2 mRNA Covid-19 vaccine. *New England Journal of Medicine*, 383(27), 2603--2615.
 
-Last, F., & Last, F. (2025). *Book Title*. Publisher.
+Senn, S. (2021). *Beta testing: The Pfizer/BioNTech statistical analysis of their Covid-19 vaccine trial*. Error Statistics Philosophy. Retrieved from https://errorstatistics.com/2021/01/17/s-senn-beta-testing-the-pfizer-biontech-statistical-analysis-of-their-covid-19-vaccine-trial-guest-post/
 
-Smith, A., & Johnson, C. (2023). *Title of the Online Article*. Retrieved from https://www.example.com.
+World Health Organization. (2022). *COVID-19 dashboard*. Retrieved from https://data.who.int/dashboards/covid19/deaths?n=c
+
+Two things to note:
 
 # Appendix
 
