@@ -3,6 +3,7 @@ title: "Priors, P-values, and Pfizer: Reanalyzing the BNT162b2 Vaccine Efficacy 
 author: "Joe Clair, Jay Kumar, and Andrew Tang"
 date: "March 10, 2026"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 urlcolor: blue
@@ -103,7 +104,7 @@ Since the FDA requires at least a 30% efficacy for the vaccine to be approved ou
 $H_o : \psi = 0.3$ versus $H_1 : \psi > 0.3$
 
 ## Likelihood Inference
-We will calculate the parameter $\psi$ using the likelihood estimator and since $T \sim Binom(n = 170, \pi) $ the Likelihood function in terms of $\pi$ will be,
+We will calculate the parameter $\psi$ using the likelihood estimator and since $T \sim Binom(n = 170, \pi)$ the Likelihood function in terms of $\pi$ will be,
 
 $$L(\pi) = \binom{n}{k}\pi^k(1-\pi)^{n - k} =\binom{170}{2}\pi^2(1-\pi)^{168} $$
 We have, 
