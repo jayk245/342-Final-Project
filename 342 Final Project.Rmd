@@ -292,8 +292,6 @@ Senn, S. (2021). *Beta testing: The Pfizer/BioNTech statistical analysis of thei
 
 World Health Organization. (2022). *COVID-19 dashboard*. Retrieved from https://data.who.int/dashboards/covid19/deaths?n=c
 
-Two things to note:
-
 # Appendix
 
 ## Code
