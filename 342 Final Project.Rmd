@@ -3,6 +3,7 @@ title: "Priors, P-values, and Pfizer: Reanalyzing the BNT162b2 Vaccine Efficacy 
 author: "Joe Clair, Jay Kumar, and Andrew Tang"
 date: "March 10, 2026"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 urlcolor: blue
@@ -103,7 +104,7 @@ Since the FDA requires at least a 30% efficacy for the vaccine to be approved ou
 $H_o : \psi = 0.3$ versus $H_1 : \psi > 0.3$
 
 ## Likelihood Inference
-We will calculate the parameter $\psi$ using the likelihood estimator and since $T \sim Binom(n = 170, \pi) $ the Likelihood function in terms of $\pi$ will be,
+We will calculate the parameter $\psi$ using the likelihood estimator and since $T \sim Binom(n = 170, \pi)$ the Likelihood function in terms of $\pi$ will be,
 
 $$L(\pi) = \binom{n}{k}\pi^k(1-\pi)^{n - k} =\binom{170}{2}\pi^2(1-\pi)^{168} $$
 We have, 
@@ -203,6 +204,15 @@ c(lower = quantile(psi, 0.025),upper = quantile(psi, 0.975))
 So our 95% bootstrapped confidence interval will be,
 (0.969697, 1)
 
+To assess whether the data provide sufficient evidence against $H_0$, we use the likelihood ratio test statistic,
+
+$$W = 2[\ell^*(\hat{\psi}^{mle}) - \ell^*(\psi_0)]$$
+which measures how much more likely the observed data are under the MLE compared to the null 
+value $\psi_0 = 0.3$. Large values of $W$ indicate the null hypothesis is not likely given 
+the data. Under $H_0$, $W$ follows an approximate $\chi^2_1$ distribution for large $n$, 
+which we use to compute a P-value. We also compute an empirical P-value by simulating the 
+distribution of $W$ under $H_0$ directly.
+
 ## Bayesian Inference
 
 Before seeing the data, we set two prior beliefs about vaccine efficacy $\psi$. We chose 
@@ -275,7 +285,15 @@ For our data, $n=170$ and $t=8$, so the posterior distribution is
 
 
 # Results
-Present your findings. 
+
+#hypothesis test findings
+
+Both hypothesis tests provided overwhelming evidence against $H_0: \psi = 0.30$. The 
+likelihood ratio test statistic was $W = 121.6012$, which under the 
+$\chi^2_1$ approximation yields a P-value essentially equal to zero. The empirical P-value, 
+obtained by simulating 10,000 samples from the null distribution of $T \sim Binom(170, \pi_0)$ 
+where $\pi_0 = 7/17$, was similarly $p_{emp} = 0$. Both results provide evidence that the true vaccine efficacy exceeds the FDA minimum threshold 
+of 30%
 
 # Discussion / Conclusion
 Discuss / conclude here.
@@ -298,5 +316,49 @@ World Health Organization. (2022). *COVID-19 dashboard*. Retrieved from https://
 ```{r ref.label = "important_R_code", eval=FALSE}
 ```
 
+```{r}
+#Calculating W and then Chi Sq approximation P-value
+n <- 170
+t <- 8
+psi_hat <- (n - 2*t) / (n - t)
+psi_0 <- 0.3
+
+loglik.psi <- function(psi, t, n) {
+  t * log(1 - psi) - n * log(2 - psi)
+}
+
+W_obs <- 2 * (loglik.psi(psi_hat, t, n) - loglik.psi(psi_0, t, n))
+W_obs
+
+1 - pchisq(W_obs, df = 1)
+```
+
+```{r, cache=TRUE}
+#Empirical P-value calcuation
+set.seed(342)
+B <- 10000
+n <- 170
+psi_0 <- 0.3
+pi_0 <- (1 - psi_0) / (2 - psi_0)  # null value of pi
+
+w_star <- replicate(B, {
+  t_star <- rbinom(1, size = n, prob = pi_0)
+  psi_hat_star <- (n - 2*t_star) / (n - t_star)
+  2 * (loglik.psi(psi_hat_star, t_star, n) - loglik.psi(psi_0, t_star, n))
+})
+
+p_emp <- mean(w_star >= W_obs)
+p_emp
+
+df <- data.frame(w_star = w_star)
+ggplot(df, aes(x = w_star)) +
+  geom_histogram() +
+  geom_vline(xintercept = W_obs) +
+  labs(
+    title = "Empirical Null Distribution of W*",
+    x = "W*",
+    y = "Frequency"
+  )
+```
 ## Proofs
 If applicable, include detailed mathematical derivations or additional theoretical explanations.
