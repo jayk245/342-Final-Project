@@ -1658,7 +1658,6 @@ and placebo groups. Vaccine efficacy <span class="math inline">\(\psi\)</span>, 
 reduction in infection risk relative to placebo, must exceed 30% to meet
 FDA minimum approval standards. The results are summarized in Table 1
 below.</p>
-<p>#Add table here? It says so in the instructions</p>
 <p>To evaluate vaccine efficacy, each company who developed a vaccine
 employed statistical methods to analyze their data. Pfizer used a
 Bayesian beta-binomial model and reported 95% efficacy (Polack et al.,
@@ -1682,18 +1681,50 @@ H_1: \psi &gt; 0.30\]</span></p>
 <h1>Statistical Methods</h1>
 <div id="model" class="section level2">
 <h2>Model</h2>
+<p>The parameter of interest for this study is,</p>
+<p><span class="math display">\[1 - \frac{ \hat \pi_v}{ \hat
+\pi_p}\]</span> This gives us the efficacy of the vaccine against
+Covid-19, where <span class="math inline">\(\hat \pi_v\)</span> is the
+probability of Covid-19 with the vaccine and <span class="math inline">\(\hat \pi_p\)</span> is the probability of Covid-19
+with the placebo.</p>
 <p>Suppose we define the random variable T as the number in the Vaccine
-group from the n = 170 Covid 19 cases</p>
+group from the n = 170 Covid-19 cases</p>
 <p>The distribution of T can be well approximated by a binomial
 distribution which is proved in the appendix</p>
 <p>Then,</p>
 <p><span class="math display">\[T \sim Binom(n = 170, \pi) \]</span>
 Where <span class="math inline">\(\pi\)</span> = P(vaccine | Covid 19
-Case)</p>
+Case) which is equal to,</p>
+<p><span class="math display">\[ \pi = \frac{n_1\pi_v}{n_1\pi_v +
+n_2\pi_p}\]</span> Since <span class="math inline">\(n_1 \approx
+n_2\)</span> so the randomization is 1:1 and so <span class="math inline">\(\pi\)</span> becomes, <span class="math display">\[\pi  = \frac{\pi_v}{\pi_v + \pi_p}\]</span> Our
+parameter of interest is the efficacy which as defined is, <span class="math display">\[ \psi = 1 - \frac{ \pi_v}{  \pi_p} = \frac{\pi_v
+-\pi_p }{\pi_p}\]</span> When can represent this in terms of our
+binomial probability <span class="math inline">\(\pi\)</span> as,</p>
+<p><span class="math display">\[\psi = \frac{1 - 2\pi}{1 - \pi}\]</span>
+Since the FDA requires at least a 30% efficacy for the vaccine to be
+approved our hypothesis that we will test will be,</p>
+<p><span class="math inline">\(H_o : \psi = 0.3\)</span> versus <span class="math inline">\(H_1 : \psi &gt; 0.3\)</span></p>
 </div>
 <div id="likelihood-inference" class="section level2">
 <h2>Likelihood Inference</h2>
-<p>Detail the likelihood approach.</p>
+<p>We will calculate the parameter <span class="math inline">\(\psi\)</span> using the likelihood estimator and
+since $T Binom(n = 170, ) $ the Likelihood function in terms of <span class="math inline">\(\pi\)</span> will be,</p>
+<p><span class="math display">\[L(\pi) = \binom{n}{k}\pi^k(1-\pi)^{n -
+k} =\binom{170}{2}\pi^2(1-\pi)^{168} \]</span> We have,</p>
+<p><span class="math display">\[\psi = \frac{1 - 2\pi}{1 - \pi}\]</span>
+<span class="math display">\[(1 - \pi)\psi = 1 - 2\pi\]</span> <span class="math display">\[2\pi- \pi\psi = 1 - \psi\]</span> <span class="math display">\[\pi(2 - \psi) = 1 - \psi\]</span> <span class="math display">\[\pi = \frac{1 - \psi}{2 - \psi}\]</span> Since
+MLEs are invariant to transformation,</p>
+<p><span class="math display">\[L^*(\psi)  =\binom{170}{2}(\frac{1 -
+\psi}{2 - \psi})^2(1-\frac{1 - \psi}{2 - \psi})^{168} \]</span> <span class="math display">\[l^*(\psi)  =log(\binom{170}{2}) + 2log(1 - \psi)
+- 2log(2 - \psi) +168log(1-\frac{1 - \psi}{2 - \psi}) \]</span> <span class="math display">\[ =log(\binom{170}{2}) + 2log(1 - \psi) - 2log(2 -
+\psi) +168log(\frac{1 }{2 - \psi}) \]</span> <span class="math display">\[ =log(\binom{170}{2}) + 2log(1 - \psi) - 2log(2 -
+\psi) +168log(1) - 168log(2 - \psi) \]</span> <span class="math display">\[l^{*&#39;}(\psi)  = -\frac{2}{1 - \psi} +
+\frac{170}{2 - \psi} \]</span> <span class="math display">\[-\frac{2}{1
+- \psi} + \frac{170}{2 - \psi} = 0\]</span> <span class="math display">\[\frac{170}{2 - \psi} = \frac{2}{1 -
+\psi}\]</span> <span class="math display">\[170 - 170\psi = 4 -
+2\psi\]</span> <span class="math display">\[166 = 168\psi\]</span> <span class="math display">\[\hat \psi^{mle} = \frac{166}{168} =
+0.98809\]</span></p>
 </div>
 <div id="bayesian-inference" class="section level2">
 <h2>Bayesian Inference</h2>
@@ -1762,6 +1793,9 @@ is <span class="math display">\[
 <div id="discussion-conclusion" class="section level1">
 <h1>Discussion / Conclusion</h1>
 <p>Discuss / conclude here.</p>
+<p>##Comment in here about Senn (2021), and how despite criticizing that
+the prior was reverse engineered around the 30% FDA Threshold, the data
+was so strong that we still get the same values.</p>
 </div>
 <div id="bibliography" class="section level1">
 <h1>Bibliography</h1>

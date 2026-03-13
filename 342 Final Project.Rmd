@@ -39,7 +39,19 @@ ultimately enrolling 34,922 participants split equally between vaccine and place
 efficacy $\psi$, defined as the proportional reduction in infection risk relative to placebo, must 
 exceed 30% to meet FDA minimum approval standards. The results are summarized in Table 1 below.
 
-#Add table here? It says so in the instructions
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Group & Cases & Sample Size \\
+        \hline
+        BNT162b2 & 2 & 17411 \\
+        \hline
+        Placebo & 168 & 17511 \\
+        \hline
+        Total & 170 & 34922 \\
+        \hline
+    \end{tabular}
+\end{center}
 
 To evaluate vaccine efficacy, each company who developed a vaccine employed statistical methods to analyze their data. 
 Pfizer used a Bayesian beta-binomial model and reported 95% efficacy (Polack et al., 2020), while another company,
@@ -61,31 +73,57 @@ $$H_0: \psi = 0.30 \quad \text{vs} \quad H_1: \psi > 0.30$$
 # Statistical Methods
 
 ## Model
-Suppose we define the random variable T as the number in the Vaccine group from the n = 170 Covid 19 cases
 
-\begin{center}
-    \begin{tabular}{|c|c|c|}
-        \hline
-        Group & Cases & Sample Size \\
-        \hline
-        BNT162b2 & 2 & 17411 \\
-        \hline
-        Placebo & 168 & 17511 \\
-        \hline
-        Total & 170 & 34922 \\
-        \hline
-    \end{tabular}
-\end{center}
+The parameter of interest for this study is,
+
+$$1 - \frac{ \hat \pi_v}{ \hat \pi_p}$$
+This gives us the efficacy of the vaccine against Covid-19, where $\hat \pi_v$ is the probability of Covid-19 with the vaccine and $\hat \pi_p$ is the probability of Covid-19 with the placebo.
+
+Suppose we define the random variable T as the number in the Vaccine group from the n = 170 Covid-19 cases
 
 The distribution of T can be well approximated by a binomial distribution which is proved in the appendix
 
 Then,
 
 $$T \sim Binom(n = 170, \pi) $$
-Where $\pi$ = P(vaccine | Covid 19 Case) 
+Where $\pi$ = P(vaccine | Covid 19 Case) which is equal to,
+
+$$ \pi = \frac{n_1\pi_v}{n_1\pi_v + n_2\pi_p}$$
+Since $n_1 \approx n_2$ so the randomization is 1:1 and so $\pi$ becomes,
+$$\pi  = \frac{\pi_v}{\pi_v + \pi_p}$$
+Our parameter of interest is the efficacy which as defined is,
+$$ \psi = 1 - \frac{ \pi_v}{  \pi_p} = \frac{\pi_v -\pi_p }{\pi_p}$$
+When can represent this in terms of our binomial probability $\pi$ as,
+
+$$\psi = \frac{1 - 2\pi}{1 - \pi}$$
+Since the FDA requires at least a 30% efficacy for the vaccine to be approved our hypothesis that we will test will be,
+
+$H_o : \psi = 0.3$ versus $H_1 : \psi > 0.3$
 
 ## Likelihood Inference
-Detail the likelihood approach.
+We will calculate the parameter $\psi$ using the likelihood estimator and since $T \sim Binom(n = 170, \pi) $ the Likelihood function in terms of $\pi$ will be,
+
+$$L(\pi) = \binom{n}{k}\pi^k(1-\pi)^{n - k} =\binom{170}{2}\pi^2(1-\pi)^{168} $$
+We have, 
+
+$$\psi = \frac{1 - 2\pi}{1 - \pi}$$
+$$(1 - \pi)\psi = 1 - 2\pi$$
+$$2\pi- \pi\psi = 1 - \psi$$
+$$\pi(2 - \psi) = 1 - \psi$$
+$$\pi = \frac{1 - \psi}{2 - \psi}$$
+Since MLEs are invariant to transformation,
+
+$$L^*(\psi)  =\binom{170}{2}(\frac{1 - \psi}{2 - \psi})^2(1-\frac{1 - \psi}{2 - \psi})^{168} $$
+$$l^*(\psi)  =log(\binom{170}{2}) + 2log(1 - \psi) - 2log(2 - \psi) +168log(1-\frac{1 - \psi}{2 - \psi}) $$
+$$ =log(\binom{170}{2}) + 2log(1 - \psi) - 2log(2 - \psi) +168log(\frac{1 }{2 - \psi}) $$
+$$ =log(\binom{170}{2}) + 2log(1 - \psi) - 2log(2 - \psi) +168log(1) - 168log(2 - \psi) $$
+$$l^{*'}(\psi)  = -\frac{2}{1 - \psi} + \frac{170}{2 - \psi} $$
+$$-\frac{2}{1 - \psi} + \frac{170}{2 - \psi} = 0$$
+$$\frac{170}{2 - \psi} = \frac{2}{1 - \psi}$$
+$$170 - 170\psi = 4 - 2\psi$$
+$$166 = 168\psi$$
+$$\hat \psi^{mle} = \frac{166}{168} = 0.98809$$
+
 
 ## Bayesian Inference
 
