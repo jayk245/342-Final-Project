@@ -14,6 +14,8 @@ fontsize: 11pt
 
 ```{r setup, include=FALSE}
 #Use this code chunk to include libraries, and set global options.
+library(fastR2)
+library(ggplot2)
 ```
 
 # Abstract
@@ -124,6 +126,82 @@ $$170 - 170\psi = 4 - 2\psi$$
 $$166 = 168\psi$$
 $$\hat \psi^{mle} = \frac{166}{168} = 0.98809$$
 
+We will now calculate the confidence interval for our estimate,
+
+We can use the theorem that our estimate is normally distributed with $\psi_0$ as the mean and the standard error as $\frac{1}{\sqrt{I(\psi_0)}}$, where $I(\psi_0)$ is the expected fisher information.
+To show that n is large enough and that regularity condition holds for this theorem to be used we need to verify that the log-likelihood function can be well approximated by a second order Taylor series around the MLE.
+
+```{r}
+loglik.psi <- function(psi, v, n) {
+  ifelse((psi >= 1), NA,
+    v * log(1 - psi) - n * log(2 - psi)
+  )
+}
+
+ml.psi <- maxLik2(loglik = loglik.psi,
+                  start = 0.5,
+                  v = 2,
+                  n = 170)
+
+plot(ml.psi, xlim = c(0.90, 1.00)) +
+  labs(title = "Second order approximation",
+       subtitle = "n = 170, t = 2",
+       x = expression(psi),
+       y = "Log-Likelihood")
+```
+
+
+We will now calculate the inteval using this distribution of our estimate,
+The fisher expected fisher information is given by,
+
+$$I(\psi_0) = E[-\frac{d^2}{d\psi^2}l^*(\psi)]_{\psi = \psi_0}$$
+$$-\frac{d^2}{d\psi^2}l^*(\psi) = \frac{2}{1 - \psi} + \frac{170}{(2 - \psi)^2}$$
+$$E[-\frac{d^2}{d\psi^2}l^*(\psi)]_{\psi = \psi_0} = \frac{2}{1 - \psi} + \frac{170}{(2 - \psi)^2}$$
+$$ = \frac{2}{1 - \frac{166}{168}} + \frac{170}{(2 - \frac{166}{168})^2}$$
+$$ = \frac{28392}{85}$$
+We can calculate a 95% confidence interval with,
+$$\hat \psi^{mle} \pm z_{\alpha/2}\sqrt{\frac{1}{I(\hat \psi^{mle})}}$$
+```{r}
+n <- 170
+v <- 2
+psi_hat <- (n - 2*v) / (n - v)
+
+I <- 2/(1 - psi_hat)^2 + 170/(2 - psi_hat)^2
+
+SE <- 1/sqrt(I)
+
+lower <- psi_hat - 1.96 * SE
+upper <- psi_hat + 1.96 * SE
+c(lower,upper)
+```
+So our 95% confidence interval for our estimate will be,
+(0.9716923, 1.0044982)
+
+We will now calculate the interval through a parametric bootstrap percentile interval.
+
+To do this we will follow the steps of first repeatedly creating new samples from the distribution,
+
+$$T \sim Binom(n = 170,  \hat \pi)$$
+We re-sample from the binomial distribution using our estimated $\pi$ from the original sample of the trials. Then with each sample we will calculate our estimate $\psi$ and then for the 95% confidence interval will take the 2.5th and 97.5th percentile to create our confidence interval.
+
+```{r}
+set.seed(342)
+
+n <- 170
+v <- 2
+pi_hat <- v/n
+psi_hat <- (n - 2*v)/(n - v)
+
+B <- 10000
+
+t <- rbinom(n = B, size = n, prob = pi_hat)
+
+psi <- (n - 2*t) / (n - t)
+
+c(lower = quantile(psi, 0.025),upper = quantile(psi, 0.975))
+```
+So our 95% bootstrapped confidence interval will be,
+(0.969697, 1)
 
 ## Bayesian Inference
 
