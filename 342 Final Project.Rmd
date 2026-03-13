@@ -359,6 +359,8 @@ Posterior Median & 0.779936 \\
 \end{tabular}
 \end{table}
 
+The posterior probability $P \left( \psi \leq 0.3 \mid t \right)$ corresponds to $P \left(\pi \geq \frac{0.7}{1.7} \mid t \right)$ which is $4.367864e-15$.
+
 # Discussion / Conclusion
 Discuss / conclude here.
 
@@ -459,7 +461,6 @@ ggplot() +
 qbeta(0.5, shape1 = 36.40 + 8, shape2 = 38.58 + 170 - 8)
 
 
-
 qbeta(p = c(0.025, 0.975), shape1 = 36.40 + 8, shape2 = 38.58 + 170 - 8)
 
 library(HDInterval)
@@ -467,4 +468,8 @@ library(HDInterval)
 hdi(qbeta, credMass = 0.95, shape1 = 36.40 + 8, shape2 = 38.58 + 170 - 8)
 ```
 
+```{r}
+#Bayesian P value
+pbeta(0.7/1.7, shape1 = 44.40, shape2 = 200.58, lower.tail = FALSE)
+```
 
