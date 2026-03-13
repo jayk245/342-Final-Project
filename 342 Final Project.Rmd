@@ -360,5 +360,3 @@ ggplot(df, aes(x = w_star)) +
     y = "Frequency"
   )
 ```
-## Proofs
-If applicable, include detailed mathematical derivations or additional theoretical explanations.
