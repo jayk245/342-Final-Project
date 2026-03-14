@@ -17,6 +17,7 @@ fontsize: 11pt
 #Use this code chunk to include libraries, and set global options.
 library(fastR2)
 library(ggplot2)
+library(HDInterval)
 ```
 
 # Abstract
@@ -84,7 +85,7 @@ This gives us the efficacy of the vaccine against Covid-19, where $\hat \pi_v$ i
 
 Suppose we define the random variable T as the number in the Vaccine group from the n = 170 Covid-19 cases
 
-The distribution of T can be well approximated by a binomial distribution which is proved in the appendix
+The distribution of T can be estimated by a binomial distribution which is proved in the appendix
 
 Then,
 
@@ -92,7 +93,7 @@ $$T \sim Binom(n = 170, \pi) $$
 Where $\pi$ = P(vaccine | Covid 19 Case) which is equal to,
 
 $$ \pi = \frac{n_1\pi_v}{n_1\pi_v + n_2\pi_p}$$
-Since $n_1 \approx n_2$ so the randomization is 1:1 and so $\pi$ becomes,
+Since $n_1 \approx n_2$,  $\pi$ becomes,
 $$\pi  = \frac{\pi_v}{\pi_v + \pi_p}$$
 Our parameter of interest is the efficacy which as defined is,
 $$ \psi = 1 - \frac{ \pi_v}{  \pi_p} = \frac{\pi_v -\pi_p }{\pi_p}$$
@@ -106,33 +107,18 @@ $H_o : \psi = 0.3$ versus $H_1 : \psi > 0.3$
 ## Likelihood Inference
 We will calculate the parameter $\psi$ using the likelihood estimator and since $T \sim Binom(n = 170, \pi)$ the Likelihood function in terms of $\pi$ will be,
 
-$$L(\pi) = \binom{n}{k}\pi^k(1-\pi)^{n - k} =\binom{170}{2}\pi^2(1-\pi)^{168} $$
-We have, 
+$$L(\pi) = \binom{n}{k}\pi^k(1-\pi)^{n - k} =\binom{170}{8}\pi^8(1-\pi)^{162} $$
+We solve this to find the MLE of $\pi$ and since MLEs are invariant to transformation we can solve for $\psi$.
 
-$$\psi = \frac{1 - 2\pi}{1 - \pi}$$
-$$(1 - \pi)\psi = 1 - 2\pi$$
-$$2\pi- \pi\psi = 1 - \psi$$
-$$\pi(2 - \psi) = 1 - \psi$$
+We can represent $\psi$ with $\pi$ as the following,
 $$\pi = \frac{1 - \psi}{2 - \psi}$$
-Since MLEs are invariant to transformation,
 
-$$L^*(\psi)  =\binom{170}{2}(\frac{1 - \psi}{2 - \psi})^2(1-\frac{1 - \psi}{2 - \psi})^{168} $$
-$$l^*(\psi)  =log(\binom{170}{2}) + 2log(1 - \psi) - 2log(2 - \psi) +168log(1-\frac{1 - \psi}{2 - \psi}) $$
-$$ =log(\binom{170}{2}) + 2log(1 - \psi) - 2log(2 - \psi) +168log(\frac{1 }{2 - \psi}) $$
-$$ =log(\binom{170}{2}) + 2log(1 - \psi) - 2log(2 - \psi) +168log(1) - 168log(2 - \psi) $$
-$$l^{*'}(\psi)  = -\frac{2}{1 - \psi} + \frac{170}{2 - \psi} $$
-$$-\frac{2}{1 - \psi} + \frac{170}{2 - \psi} = 0$$
-$$\frac{170}{2 - \psi} = \frac{2}{1 - \psi}$$
-$$170 - 170\psi = 4 - 2\psi$$
-$$166 = 168\psi$$
-$$\hat \psi^{mle} = \frac{166}{168} = 0.98809$$
 
-We will now calculate the confidence interval for our estimate,
 
-We can use the theorem that our estimate is normally distributed with $\psi_0$ as the mean and the standard error as $\frac{1}{\sqrt{I(\psi_0)}}$, where $I(\psi_0)$ is the expected fisher information.
+To calculate the confidence interval for our estimate, we can use the theorem that our estimate is normally distributed with $\psi_0$ as the mean and the standard error as $\frac{1}{\sqrt{I(\psi_0)}}$, where $I(\psi_0)$ is the expected fisher information.
 To show that n is large enough and that regularity condition holds for this theorem to be used we need to verify that the log-likelihood function can be well approximated by a second order Taylor series around the MLE.
 
-```{r}
+```{r, echo=FALSE}
 loglik.psi <- function(psi, v, n) {
   ifelse((psi >= 1), NA,
     v * log(1 - psi) - n * log(2 - psi)
@@ -151,58 +137,19 @@ plot(ml.psi, xlim = c(0.90, 1.00)) +
        y = "Log-Likelihood")
 ```
 
+This graph shows that the log-Likelihood function can be well approximated by a second order Taylor series around the MLE so the regularity conditions hold so we justify our use of the normal distribution of the MLE to calculate the estimate. 
 
-We will now calculate the inteval using this distribution of our estimate,
 The fisher expected fisher information is given by,
 
 $$I(\psi_0) = E[-\frac{d^2}{d\psi^2}l^*(\psi)]_{\psi = \psi_0}$$
-$$-\frac{d^2}{d\psi^2}l^*(\psi) = \frac{2}{1 - \psi} + \frac{170}{(2 - \psi)^2}$$
-$$E[-\frac{d^2}{d\psi^2}l^*(\psi)]_{\psi = \psi_0} = \frac{2}{1 - \psi} + \frac{170}{(2 - \psi)^2}$$
-$$ = \frac{2}{1 - \frac{166}{168}} + \frac{170}{(2 - \frac{166}{168})^2}$$
-$$ = \frac{28392}{85}$$
 We can calculate a 95% confidence interval with,
 $$\hat \psi^{mle} \pm z_{\alpha/2}\sqrt{\frac{1}{I(\hat \psi^{mle})}}$$
-```{r}
-n <- 170
-v <- 2
-psi_hat <- (n - 2*v) / (n - v)
 
-I <- 2/(1 - psi_hat)^2 + 170/(2 - psi_hat)^2
-
-SE <- 1/sqrt(I)
-
-lower <- psi_hat - 1.96 * SE
-upper <- psi_hat + 1.96 * SE
-c(lower,upper)
-```
-So our 95% confidence interval for our estimate will be,
-(0.9716923, 1.0044982)
-
-We will now calculate the interval through a parametric bootstrap percentile interval.
+We will also calculate the interval through a parametric bootstrap percentile interval.
 
 To do this we will follow the steps of first repeatedly creating new samples from the distribution,
-
 $$T \sim Binom(n = 170,  \hat \pi)$$
 We re-sample from the binomial distribution using our estimated $\pi$ from the original sample of the trials. Then with each sample we will calculate our estimate $\psi$ and then for the 95% confidence interval will take the 2.5th and 97.5th percentile to create our confidence interval.
-
-```{r}
-set.seed(342)
-
-n <- 170
-v <- 2
-pi_hat <- v/n
-psi_hat <- (n - 2*v)/(n - v)
-
-B <- 10000
-
-t <- rbinom(n = B, size = n, prob = pi_hat)
-
-psi <- (n - 2*t) / (n - t)
-
-c(lower = quantile(psi, 0.025),upper = quantile(psi, 0.975))
-```
-So our 95% bootstrapped confidence interval will be,
-(0.969697, 1)
 
 To assess whether the data provide sufficient evidence against $H_0$, we use the likelihood ratio test statistic,
 
@@ -313,6 +260,15 @@ ggplot() +
 
 
 # Results
+We will not discuss the results of our inference using Likelihood.
+Using the MLE we calculate our parameter of interest in the appendix as,
+$$\hat \psi^{mle} =  \frac{154}{162} = 0.95061$$
+We use the normal distribution of our to estimate the 95% Confidence interval,
+which the calculation in the appendix estimates as,
+(0.9716923, 1.0044982)
+
+The parametric bootstrap estimates the interval as,
+(0.9102564, 0.9820359 )
 
 ## Hypothesis test findings
 
@@ -463,8 +419,6 @@ qbeta(0.5, shape1 = 36.40 + 8, shape2 = 38.58 + 170 - 8)
 
 qbeta(p = c(0.025, 0.975), shape1 = 36.40 + 8, shape2 = 38.58 + 170 - 8)
 
-library(HDInterval)
-
 hdi(qbeta, credMass = 0.95, shape1 = 36.40 + 8, shape2 = 38.58 + 170 - 8)
 ```
 
@@ -473,3 +427,97 @@ hdi(qbeta, credMass = 0.95, shape1 = 36.40 + 8, shape2 = 38.58 + 170 - 8)
 pbeta(0.7/1.7, shape1 = 44.40, shape2 = 200.58, lower.tail = FALSE)
 ```
 
+```{r}
+#Bootstrap CI
+set.seed(342)
+
+n <- 170
+v <- 8
+pi_hat <- v/n
+psi_hat <- (n - 2*v)/(n - v)
+
+B <- 10000
+
+t <- rbinom(n = B, size = n, prob = pi_hat)
+
+psi <- (n - 2*t) / (n - t)
+
+c(lower = quantile(psi, 0.025),upper = quantile(psi, 0.975))
+```
+
+```{r}
+#Fisher Information CI
+n <- 170
+v <- 8
+psi_hat <- (n - 2*v) / (n - v)
+
+I <- 8/(1 - psi_hat)^2 + 170/(2 - psi_hat)^2
+
+SE <- 1/sqrt(I)
+
+lower <- psi_hat - 1.96 * SE
+upper <- psi_hat + 1.96 * SE
+c(lower,upper)
+```
+
+```{r}
+#Second order approximation
+loglik.pi <- function(pi, v, n) {
+  ifelse((pi <= 0 | pi >= 1), NA,
+    v * log(pi) + (n - v) * log(1 - pi)
+  )
+}
+
+ml.pi <- maxLik2(loglik = loglik.pi,
+                 start = 0.5,
+                 v = 8,
+                 n = 170)
+
+plot(ml.pi) +
+  labs(title = "Second order approximation",
+       subtitle = "n = 170, t = 2",
+       x = expression(pi),
+       y = "Log-Likelihood")
+```
+
+#Proofs and Working
+
+To simply our estimator $\pi$ we have by definition of conditional probability,
+$$\pi = P(Vaccine | Covid19) =\frac{ P(Vaccine) \land P(Covid19)}{P(Covid19)}$$
+$$=\frac{ P(Vaccine)  P(Covid19 | Vaccine)}{P(Vaccine)P(Covid19 | vaccine) + P(placebo)P(Covid19 | placebo)}$$
+
+$$ = \frac{\frac{n1}{n1 + n2}\pi}{\frac{n_1 \pi_v + n_2 \pi_p}{n_1 + n_2}}$$
+$$ = \frac{n_1 \pi_v}{n_1 \pi_v + n_2 \pi_p}$$
+
+To calculate the MLE we do the following,
+$$L(\pi) = \binom{n}{k}\pi^k(1-\pi)^{n - k} =\binom{170}{8}\pi^8(1-\pi)^{162} $$
+$$L^*(\psi)  =\binom{170}{8}(\frac{1 - \psi}{2 - \psi})^8(1-\frac{1 - \psi}{2 - \psi})^{162} $$
+$$l^*(\psi)  =log(\binom{170}{8}) + 8log(1 - \psi) - 8log(2 - \psi) +162log(1-\frac{1 - \psi}{2 - \psi}) $$
+$$ =log(\binom{170}{8}) + 8log(1 - \psi) - 8log(2 - \psi) +162log(\frac{1 }{2 - \psi}) $$
+$$ =log(\binom{170}{8}) + 8log(1 - \psi) - 8log(2 - \psi) +162log(1) - 162log(2 - \psi) $$
+$$l^{*'}(\psi)  = -\frac{8}{1 - \psi} + \frac{170}{2 - \psi} $$
+$$-\frac{8}{1 - \psi} + \frac{170}{2 - \psi} = 0$$
+$$\frac{170}{2 - \psi} = \frac{8}{1 - \psi}$$
+$$170 - 170\psi = 16 - 8\psi$$
+$$154 = 162\psi$$
+$$\hat \psi^{mle} = \frac{154}{162} = 0.95061$$
+We will now calculate the interval using this distribution of our estimate,
+The fisher expected fisher information is given by,
+$$I(\psi_0) = E[-\frac{d^2}{d\psi^2}l^*(\psi)]_{\psi = \psi_0}$$
+$$-\frac{d^2}{d\psi^2}l^*(\psi) = \frac{8}{1 - \psi} + \frac{170}{(2 - \psi)^2}$$
+$$E[-\frac{d^2}{d\psi^2}l^*(\psi)]_{\psi = \psi_0} = \frac{8}{1 - \psi} + \frac{170}{(2 - \psi)^2}$$
+$$ = \frac{8}{1 - \frac{154}{162}} + \frac{170}{(2 - \frac{154}{162})^2}$$
+$$ = \frac{13122}{85}$$
+We can calculate a 95% confidence interval with,
+$$\hat \psi^{mle} \pm z_{\alpha/2}\sqrt{\frac{1}{I(\hat \psi^{mle})}}$$
+
+So we get the 95% confidence interval using R as,
+(0.9716923, 1.0044982)
+
+
+To represent $\psi$ in terms of $\pi$, 
+$$\psi = \frac{1 - 2\pi}{1 - \pi}$$
+$$(1 - \pi)\psi = 1 - 2\pi$$
+$$2\pi- \pi\psi = 1 - \psi$$
+$$\pi(2 - \psi) = 1 - \psi$$
+$$\pi = \frac{1 - \psi}{2 - \psi}$$
