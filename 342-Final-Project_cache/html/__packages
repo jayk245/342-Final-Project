@@ -1,3 +1,10 @@
+base
+methods
+datasets
+utils
+grDevices
+graphics
+stats
 lattice
 ggplot2
 Matrix
@@ -6,5 +13,5 @@ ggformula
 mosaicData
 mosaic
 fastR2
-LearnBayes
 HDInterval
+LearnBayes

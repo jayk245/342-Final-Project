@@ -258,6 +258,106 @@ ggplot() +
   )
 ```
 
+The Bayesian posterior summary for $\pi$ is then:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Quantity} & \textbf{Result} \\
+\hline
+Posterior Median & 0.180371 \\
+\hline
+95\% Equal-Tail & $(0.1356515, \ 0.2317538)$ \\
+\hline
+95\% HPDI & $(0.1340409, \ 0.2299012)$ \\
+\hline
+\end{tabular}
+\end{table}
+
+To convert the posterior summaries from $\pi$ to $\psi$, we use
+\[
+\psi = \frac{1-2\pi}{1-\pi}.
+\]
+
+Using the posterior median of $\pi$, we have
+\[
+\psi_{\text{median}}
+= \frac{1 - 2(0.180371)}{1 - 0.180371}
+= \frac{1 - 0.360742}{0.819629}
+= \frac{0.639258}{0.819629}
+= 0.779936.
+\]
+
+For the 95\% equal-tail interval, we transform each endpoint:
+\[
+\psi_{\text{lower}}
+= \frac{1 - 2(0.2317538)}{1 - 0.2317538}
+= \frac{1 - 0.4635076}{0.7682462}
+= \frac{0.5364924}{0.7682462}
+= 0.698334,
+\]
+and
+\[
+\psi_{\text{upper}}
+= \frac{1 - 2(0.1356515)}{1 - 0.1356515}
+= \frac{1 - 0.2713030}{0.8643485}
+= \frac{0.7286970}{0.8643485}
+= 0.843059.
+\]
+
+Similarly, transforming the HPDI endpoints gives
+\[
+\psi_{\text{lower}}
+= \frac{1 - 2(0.2299012)}{1 - 0.2299012}
+= 0.701465,
+\qquad
+\psi_{\text{upper}}
+= \frac{1 - 2(0.1340409)}{1 - 0.1340409}
+= 0.845211.
+\]
+
+The Bayesian posterior summary for $\psi$ is then:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Quantity} & \textbf{Result} \\
+\hline
+Posterior Median & 0.779936 \\
+\hline
+95\% Equal-Tail & $(0.698334,\ 0.843059)$ \\
+\hline
+95\% HPDI & $(0.701465,\ 0.845211)$ \\
+\hline
+\end{tabular}
+\end{table}
+
+To evaluate the Bayesian evidence against the efficacy benchmark of 30\%, we calculate
+\[
+P(\psi \leq 0.3 \mid t).
+\]
+Using the relationship
+\[
+\pi = \frac{1-\psi}{2-\psi},
+\]
+we first convert the statement \(\psi \leq 0.3\) into a statement about \(\pi\). 
+\begin{align*}
+\psi &\leq 0.3, \\
+\frac{1-2\pi}{1-\pi} &\leq 0.3, \\
+1 - 2\pi &\leq 0.3(1-\pi), \\
+1 - 2\pi &\leq 0.3 - 0.3\pi, \\
+0.7 - 2\pi &\leq -0.3\pi, \\
+0.7 &\leq 1.7\pi, \\
+\pi &\geq \frac{0.7}{1.7}.
+\end{align*}
+
+So,
+\[
+P(\psi \leq 0.3 \mid t) = P\left(\pi \geq \frac{0.7}{1.7} \mid t\right).
+\]
+
 
 # Results
 We will not discuss the results of our inference using Likelihood.
@@ -281,41 +381,9 @@ of 30%.
 
 ## Bayesian
 
-The Bayesian posterior summary for $\pi$ is then:
+The posterior probability $P \left( \psi \leq 0.3 \mid t \right)$ corresponds to $P \left(\pi \geq \frac{0.7}{1.7} \mid t \right)$ which is $4.367864e-15$. This posterior probability is essentially 0, indicating that given the observed data, there is convincing evidence that vaccine efficacy is above $0.3$.
 
-\begin{table}[h!]
-\centering
-\begin{tabular}{|l|c|}
-\hline
-\textbf{Quantity} & \textbf{Result} \\
-\hline
-Posterior Median & 0.180371 \\
-\hline
-95\% Equal-Tail & $(0.1356515, \ 0.2317538)$ \\
-\hline
-95\% HPDI & $(0.1340409, \ 0.2299012)$ \\
-\hline
-\end{tabular}
-\end{table}
-
-Converting this to $\psi$ using $\psi = \frac{1 - 2\pi}{1 - \pi} \Rightarrow \pi = \frac{1 - \psi}{2 - \psi}$, the Bayesian posterior summary for $\psi$ is then:
-
-\begin{table}[h!]
-\centering
-\begin{tabular}{|l|c|}
-\hline
-\textbf{Quantity} & \textbf{Result} \\
-\hline
-Posterior Median & 0.779936 \\
-\hline
-95\% Equal-Tail & $(0.698334,\ 0.843059)$ \\
-\hline
-95\% HPDI & $(0.701465,\ 0.845211)$ \\
-\hline
-\end{tabular}
-\end{table}
-
-The posterior probability $P \left( \psi \leq 0.3 \mid t \right)$ corresponds to $P \left(\pi \geq \frac{0.7}{1.7} \mid t \right)$ which is $4.367864e-15$.
+This conclusion is also supported by the posterior median and the 95\% credible intervals for \(\psi\). The posterior median is \(0.779936\), and both the 95\% equal-tail interval \((0.698334,\ 0.843059)\) and the 95\% HPDI \((0.701465,\ 0.845211)\) lie entirely above \(0.3\). 
 
 # Discussion / Conclusion
 Discuss / conclude here.
