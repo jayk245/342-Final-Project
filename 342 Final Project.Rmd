@@ -21,7 +21,16 @@ library(HDInterval)
 ```
 
 # Abstract
-Write your abstract here.
+The COVID-19 pandemic led to rapid vaccine development, especially in Pfizer-BioNTech's 
+BNT162b2 mRNA vaccine receiving FDA Emergency Use Authorization in December 2020. We 
+independently reanalyze their Phase 3 trial data using both Bayesian and Frequentist methods 
+to test whether vaccine efficacy, $\psi$, exceeds the FDA minimum threshold of 30\%. This addresses
+concerns raised by Senn (2021) that Pfizer's original prior was reverse-engineered from this 
+threshold rather than reflecting genuine pre-trial belief. Under both approaches, the data 
+provided overwhelming evidence that vaccine efficacy exceeds 30\%, with a frequentist MLE of 
+$\hat{\psi} = 0.951$ and a Bayesian posterior median of $0.780$. Despite using a more 
+skeptical prior than Pfizer, our conclusions are consistent with their reported 95\% efficacy, 
+suggesting the results are not only strong with both frameworks, but even a more relevant prior.
 
 # Keywords
 *Vaccine Efficacy*, *COVID-19*, *Prior Elicitation*, *Bayesian Analysis*
@@ -48,9 +57,9 @@ exceed 30% to meet FDA minimum approval standards. The results are summarized in
         \hline
         Group & Cases & Sample Size \\
         \hline
-        BNT162b2 & 2 & 17411 \\
+        BNT162b2 & 8 & 17411 \\
         \hline
-        Placebo & 168 & 17511 \\
+        Placebo & 162 & 17511 \\
         \hline
         Total & 170 & 34922 \\
         \hline
@@ -70,9 +79,6 @@ methods, this time using a prior that is more in line with the Bayesian framewor
 
 $$H_0: \psi = 0.30 \quad \text{vs} \quad H_1: \psi > 0.30$$
 
-```{r label="important_R_code", eval=TRUE, echo=FALSE}
-# You can reference your code in the appendix (sample here).
-```
 
 # Statistical Methods
 
@@ -116,24 +122,25 @@ $$\pi = \frac{1 - \psi}{2 - \psi}$$
 
 
 To calculate the confidence interval for our estimate, we can use the theorem that our estimate is normally distributed with $\psi_0$ as the mean and the standard error as $\frac{1}{\sqrt{I(\psi_0)}}$, where $I(\psi_0)$ is the expected fisher information.
-To show that n is large enough and that regularity condition holds for this theorem to be used we need to verify that the log-likelihood function can be well approximated by a second order Taylor series around the MLE.
+To show that n is large enough and that regularity condition holds for this theorem to be used we need to verify that the log-likelihood function can be well approximated by a second order Taylor series around the MLE. Since $\psi$ is a transformation of $\pi$, we verify the quadratic 
+approximation using the log-likelihood in terms of $\pi$, which is equivalent  by the invariance property of the MLE.
 
 ```{r, echo=FALSE}
-loglik.psi <- function(psi, v, n) {
-  ifelse((psi >= 1), NA,
-    v * log(1 - psi) - n * log(2 - psi)
+loglik.pi <- function(pi, v, n) {
+  ifelse((pi <= 0 | pi >= 1), NA,
+    v * log(pi) + (n - v) * log(1 - pi)
   )
 }
 
-ml.psi <- maxLik2(loglik = loglik.psi,
-                  start = 0.5,
-                  v = 2,
-                  n = 170)
+ml.pi <- maxLik2(loglik = loglik.pi,
+                 start = 0.5,
+                 v = 8,
+                 n = 170)
 
-plot(ml.psi, xlim = c(0.90, 1.00)) +
-  labs(title = "Second order approximation",
-       subtitle = "n = 170, t = 2",
-       x = expression(psi),
+plot(ml.pi) +
+  labs(title = "Second Order Approximation of Log-Likelihood",
+       subtitle = "n = 170, t = 8",
+       x = expression(pi),
        y = "Log-Likelihood")
 ```
 
@@ -360,7 +367,9 @@ P(\psi \leq 0.3 \mid t) = P\left(\pi \geq \frac{0.7}{1.7} \mid t\right).
 
 
 # Results
-We will not discuss the results of our inference using Likelihood.
+
+### Frequentist
+We will now discuss the results of our inference using Likelihood.
 Using the MLE we calculate our parameter of interest in the appendix as,
 $$\hat \psi^{mle} =  \frac{154}{162} = 0.95061$$
 We use the normal distribution of our to estimate the 95% Confidence interval,
@@ -370,7 +379,6 @@ which the calculation in the appendix estimates as,
 The parametric bootstrap estimates the interval as,
 (0.9102564, 0.9820359 )
 
-## Hypothesis test findings
 
 Both hypothesis tests provided overwhelming evidence against $H_0: \psi = 0.30$. The 
 likelihood ratio test statistic was $W = 121.6012$, which under the 
@@ -379,16 +387,30 @@ obtained by simulating 10,000 samples from the null distribution of $T \sim Bino
 where $\pi_0 = 7/17$, was similarly $p_{emp} = 0$. Both results provide evidence that the true vaccine efficacy exceeds the FDA minimum threshold 
 of 30%.
 
-## Bayesian
+### Bayesian
 
 The posterior probability $P \left( \psi \leq 0.3 \mid t \right)$ corresponds to $P \left(\pi \geq \frac{0.7}{1.7} \mid t \right)$ which is $4.367864e-15$. This posterior probability is essentially 0, indicating that given the observed data, there is convincing evidence that vaccine efficacy is above $0.3$.
 
 This conclusion is also supported by the posterior median and the 95\% credible intervals for \(\psi\). The posterior median is \(0.779936\), and both the 95\% equal-tail interval \((0.698334,\ 0.843059)\) and the 95\% HPDI \((0.701465,\ 0.845211)\) lie entirely above \(0.3\). 
 
 # Discussion / Conclusion
-Discuss / conclude here.
 
-##Comment in here about Senn (2021), and how despite criticizing that the prior was reverse engineered around the 30% FDA Threshold, the data was so strong that we still get the same values.
+Both the frequentist and Bayesian analyses provide overwhelming evidence that the BNT162b2 
+vaccine efficacy exceeds the FDA minimum threshold of 30\%. The Frequentist MLE of 
+$\hat{\psi} = 0.951$ and the Bayesian posterior median of $0.780$ both point to a highly 
+effective vaccine, and all confidence and credible intervals lie entirely above 30\%.
+The two methods differ in their point estimates, which is expected given our deliberately 
+skeptical prior. Our Bayesian analysis assigned only a 10\% prior probability that the vaccine 
+would meet the FDA threshold, yet the posterior was still overwhelmingly in favor of high 
+efficacy.
+
+This allows us to note something else Senn (2021) mentioned in his blog critiquing the Pfizer prior. While we agree that Pfizer's 
+Beta(0.700102, 1) prior was not reflective of genuine pre-trial belief, our reanalysis shows 
+that the choice of prior had little practical impact on the conclusions. The trial data was so decisive that both a potentially lenient prior 
+and a skeptical one end up with essentially the same result. Pfizer's reported 95\% efficacy 
+with credible interval $[90.3\%, 97.6\%]$ is consistent with our findings under both 
+frameworks, suggesting the high efficacy of BNT162b2 is a strong conclusion regardless of 
+the statistical approach and prior taken.
 
 # Bibliography
 
@@ -526,26 +548,6 @@ SE <- 1/sqrt(I)
 lower <- psi_hat - 1.96 * SE
 upper <- psi_hat + 1.96 * SE
 c(lower,upper)
-```
-
-```{r}
-#Second order approximation
-loglik.pi <- function(pi, v, n) {
-  ifelse((pi <= 0 | pi >= 1), NA,
-    v * log(pi) + (n - v) * log(1 - pi)
-  )
-}
-
-ml.pi <- maxLik2(loglik = loglik.pi,
-                 start = 0.5,
-                 v = 8,
-                 n = 170)
-
-plot(ml.pi) +
-  labs(title = "Second order approximation",
-       subtitle = "n = 170, t = 2",
-       x = expression(pi),
-       y = "Log-Likelihood")
 ```
 
 #Proofs and Working
