@@ -50,7 +50,7 @@ December 2020 after a large-scale randomized, double-blind, placebo-controlled P
 (Polack et al., 2020). The trial was designed to run until 170 confirmed COVID-19 cases were observed, 
 ultimately enrolling 34,922 participants split equally between vaccine and placebo groups. Vaccine 
 efficacy $\psi$, defined as the proportional reduction in infection risk relative to placebo, must 
-exceed 30% to meet FDA minimum approval standards. The results are summarized in Table 1 below.
+exceed 30% to meet FDA minimum approval standards. The results are summarized in the table below.
 
 \begin{center}
     \begin{tabular}{|c|c|c|}
@@ -172,10 +172,12 @@ distribution of $W$ under $H_0$ directly.
 Before seeing the data, we set two prior beliefs about vaccine efficacy $\psi$. We chose 
 $P(\psi \geq 0.3) = 0.10$ because mRNA vaccines had never been approved before, and most 
 Phase 3 vaccine trials fail, so we were skeptical the vaccine would clear the FDA's 30% bar. 
-We chose $P(\psi \geq 0) = 0.60$ given promising immune responses observed in Phase 1/2 trials (Polack et al., 2020). Following Senn (2021), who argues Pfizer's prior was reverse-engineered from the FDA 
-threshold rather than reflecting real prior beliefs, we created our beliefs directly 
-rather than working backwards from the approval standard. We now will use the `beta.select` function in R in order
-to generate a beta distribution from our new prior beliefs.
+We chose $P(\psi \geq 0) = 0.60$ given promising immune responses observed in Phase 1/2 
+trials (Polack et al., 2020). Following Senn (2021), who argues Pfizer's prior was 
+reverse-engineered from the FDA threshold rather than reflecting genuine pre-trial belief, 
+we elicited these beliefs directly rather than working backwards from the approval standard. 
+These constraints were translated into statements about $\pi$ and used to determine a 
+Beta$(a, b)$ prior via \texttt{beta.select} in R.
 
 Under our prior beliefs,
 \begin{align*}
@@ -376,8 +378,8 @@ We use the normal distribution of our to estimate the 95% Confidence interval,
 which the calculation in the appendix estimates as,
 (0.9171746, 0.9840599)
 
-The parametric bootstrap estimates the interval as,
-(0.9102564, 0.9820359 )
+The parametric bootstrap estimates the interval as
+(0.9102564, 0.9820359).
 
 
 Both hypothesis tests provided overwhelming evidence against $H_0: \psi = 0.30$. The 
