@@ -374,7 +374,7 @@ Using the MLE we calculate our parameter of interest in the appendix as,
 $$\hat \psi^{mle} =  \frac{154}{162} = 0.95061$$
 We use the normal distribution of our to estimate the 95% Confidence interval,
 which the calculation in the appendix estimates as,
-(0.9716923, 1.0044982)
+(0.9171746, 0.9840599)
 
 The parametric bootstrap estimates the interval as,
 (0.9102564, 0.9820359 )
@@ -550,7 +550,33 @@ upper <- psi_hat + 1.96 * SE
 c(lower,upper)
 ```
 
-#Proofs and Working
+# Proofs and Working
+
+To show that T is a binomial random variable, we have X = number of Covid cases in the vaccine group and Y = number in placebo group. Since n is large for both we have,
+$$X \sim Pois(n_1, \pi_v) $$
+$$Y \sim Pois(n_2, \pi_p) $$
+
+The PMF of T can be represented as,
+
+$$P(T = t) = P(X = t | X + Y = n)$$
+
+$$= \frac{P(X = t) \times P(Y = n-t)}{P(X+Y = n)}$$
+
+$$= \frac{\frac{e^{-n_1\pi_v}(n_1\pi_v)^t}{t!} \times \frac{e^{-n_2\pi_p}(n_2\pi_p)^{n-t}}{(n-t)!}}{\frac{e^{-(n_1\pi_v + n_2\pi_p)}(n_1\pi_v + n_2\pi_p)^n}{n!}}$$
+
+$$= \frac{n!}{t!(n-t)!} \times \frac{e^{-n_1\pi_v}(n_1\pi_v)^t \times e^{-n_2\pi_p}(n_2\pi_p)^{n-t}}{e^{-(n_1\pi_v + n_2\pi_p)}(n_1\pi_v + n_2\pi_p)^n}$$
+
+$$= \binom{n}{t} \times \frac{e^{-(n_1\pi_v + n_2\pi_p)}(n_1\pi_v)^t(n_2\pi_p)^{n-t}}{e^{-(n_1\pi_v + n_2\pi_p)}(n_1\pi_v + n_2\pi_p)^n}$$
+
+$$= \binom{n}{t} \times \frac{(n_1\pi_v)^t(n_2\pi_p)^{n-t}}{(n_1\pi_v + n_2\pi_p)^n}$$
+
+$$= \binom{n}{t} \times \frac{(n_1\pi_v)^t(n_2\pi_p)^{n-t}}{(n_1\pi_v + n_2\pi_p)^{t+n-t}}$$
+
+$$= \binom{n}{t} \times \frac{(n_1\pi_v)^t(n_2\pi_p)^{n-t}}{(n_1\pi_v + n_2\pi_p)^t(n_1\pi_v + n_2\pi_p)^{n-t}}$$
+
+$$= \binom{n}{t} \left(\frac{n_1\pi_v}{n_1\pi_v + n_2\pi_p}\right)^t \left(\frac{n_2\pi_p}{n_1\pi_v + n_2\pi_p}\right)^{n-t}$$
+
+$$= \binom{n}{t} \pi^t (1-\pi)^{n-t}$$
 
 To simply our estimator $\pi$ we have by definition of conditional probability,
 $$\pi = P(Vaccine | Covid19) =\frac{ P(Vaccine) \land P(Covid19)}{P(Covid19)}$$
@@ -559,35 +585,36 @@ $$=\frac{ P(Vaccine)  P(Covid19 | Vaccine)}{P(Vaccine)P(Covid19 | vaccine) + P(p
 $$ = \frac{\frac{n1}{n1 + n2}\pi}{\frac{n_1 \pi_v + n_2 \pi_p}{n_1 + n_2}}$$
 $$ = \frac{n_1 \pi_v}{n_1 \pi_v + n_2 \pi_p}$$
 
-To calculate the MLE we do the following,
-$$L(\pi) = \binom{n}{k}\pi^k(1-\pi)^{n - k} =\binom{170}{8}\pi^8(1-\pi)^{162} $$
-$$L^*(\psi)  =\binom{170}{8}(\frac{1 - \psi}{2 - \psi})^8(1-\frac{1 - \psi}{2 - \psi})^{162} $$
-$$l^*(\psi)  =log(\binom{170}{8}) + 8log(1 - \psi) - 8log(2 - \psi) +162log(1-\frac{1 - \psi}{2 - \psi}) $$
-$$ =log(\binom{170}{8}) + 8log(1 - \psi) - 8log(2 - \psi) +162log(\frac{1 }{2 - \psi}) $$
-$$ =log(\binom{170}{8}) + 8log(1 - \psi) - 8log(2 - \psi) +162log(1) - 162log(2 - \psi) $$
-$$l^{*'}(\psi)  = -\frac{8}{1 - \psi} + \frac{170}{2 - \psi} $$
-$$-\frac{8}{1 - \psi} + \frac{170}{2 - \psi} = 0$$
-$$\frac{170}{2 - \psi} = \frac{8}{1 - \psi}$$
-$$170 - 170\psi = 16 - 8\psi$$
-$$154 = 162\psi$$
-$$\hat \psi^{mle} = \frac{154}{162} = 0.95061$$
-We will now calculate the interval using this distribution of our estimate,
-The fisher expected fisher information is given by,
-$$I(\psi_0) = E[-\frac{d^2}{d\psi^2}l^*(\psi)]_{\psi = \psi_0}$$
-$$-\frac{d^2}{d\psi^2}l^*(\psi) = \frac{8}{1 - \psi} + \frac{170}{(2 - \psi)^2}$$
-$$E[-\frac{d^2}{d\psi^2}l^*(\psi)]_{\psi = \psi_0} = \frac{8}{1 - \psi} + \frac{170}{(2 - \psi)^2}$$
-$$ = \frac{8}{1 - \frac{154}{162}} + \frac{170}{(2 - \frac{154}{162})^2}$$
-$$ = \frac{13122}{85}$$
-We can calculate a 95% confidence interval with,
-$$\hat \psi^{mle} \pm z_{\alpha/2}\sqrt{\frac{1}{I(\hat \psi^{mle})}}$$
-
-So we get the 95% confidence interval using R as,
-(0.9716923, 1.0044982)
-
-
 To represent $\psi$ in terms of $\pi$, 
 $$\psi = \frac{1 - 2\pi}{1 - \pi}$$
 $$(1 - \pi)\psi = 1 - 2\pi$$
 $$2\pi- \pi\psi = 1 - \psi$$
 $$\pi(2 - \psi) = 1 - \psi$$
 $$\pi = \frac{1 - \psi}{2 - \psi}$$
+
+To calculate the MLE we do the following,
+$$L(\pi) = \binom{n}{k}\pi^k(1-\pi)^{n - k} =\binom{170}{8}\pi^8(1-\pi)^{162} $$
+$$L^*(\psi)  =\binom{170}{8}(\frac{1 - \psi}{2 - \psi})^8(1-\frac{1 - \psi}{2 - \psi})^{162} $$
+$$l^*(\psi)  =log(\binom{170}{8}) + 8log(1 - \psi) - 8log(2 - \psi) +162log(1-\frac{1 - \psi}{2 - \psi}) $$
+$$ =log(\binom{170}{8}) + 8log(1 - \psi) - 8log(2 - \psi) +162log(\frac{1 }{2 - \psi}) $$
+$$ =log(\binom{170}{8}) + 8log(1 - \psi) - 8log(2 - \psi) +162log(1) - 162log(2 - \psi) $$
+$$ =log(\binom{170}{8}) + 8log(1 - \psi) +162log(1) - 170log(2 - \psi) $$
+$$l^{*'}(\psi)  = -\frac{8}{1 - \psi} + \frac{170}{2 - \psi} $$
+$$-\frac{8}{1 - \psi} + \frac{170}{2 - \psi} = 0$$
+$$\frac{170}{2 - \psi} = \frac{8}{1 - \psi}$$
+$$170 - 170\psi = 16 - 8\psi$$
+$$154 = 162\psi$$
+$$\hat \psi^{mle} = \frac{154}{162} = 0.95061$$
+
+We will now calculate the interval using this distribution of our estimate,
+The fisher expected fisher information is given by,
+$$I(\psi_0) = E[-\frac{d^2}{d\psi^2}l^*(\psi)]_{\psi = \psi_0}$$
+$$-\frac{d^2}{d\psi^2}l^*(\psi) = \frac{8}{(1 - \psi)^2} + \frac{170}{(2 - \psi)^2}$$
+$$E[-\frac{d^2}{d\psi^2}l^*(\psi)]_{\psi = \psi_0} = \frac{8}{(1 - \psi)^2} + \frac{170}{(2 - \psi)^2}$$
+$$ = \frac{8}{(1 - \frac{154}{162})^2} + \frac{170}{(2 - \frac{154}{162})^2}$$
+$$ = \frac{583929}{170}$$
+We can calculate a 95% confidence interval with,
+$$\hat \psi^{mle} \pm z_{\alpha/2}\sqrt{\frac{1}{I(\hat \psi^{mle})}}$$
+
+So we get the 95% confidence interval using R as,
+(0.9171746, 0.9840599)
