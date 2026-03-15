@@ -125,7 +125,7 @@ To calculate the confidence interval for our estimate, we can use the theorem th
 To show that n is large enough and that regularity condition holds for this theorem to be used we need to verify that the log-likelihood function can be well approximated by a second order Taylor series around the MLE. Since $\psi$ is a transformation of $\pi$, we verify the quadratic 
 approximation using the log-likelihood in terms of $\pi$, which is equivalent  by the invariance property of the MLE.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 loglik.pi <- function(pi, v, n) {
   ifelse((pi <= 0 | pi >= 1), NA,
     v * log(pi) + (n - v) * log(1 - pi)
