@@ -212,7 +212,7 @@ P\left(\pi \leq \frac{1}{2}\right) = 0.6.
 \end{align*}
 
 Using this to create a beta distribution gives $Beta (36.40, 38.58)$ as the prior.
-```{r}
+```{r, echo = FALSE, eval = FALSE}
 library(LearnBayes)
 
 beta.select(
@@ -471,6 +471,16 @@ ggplot(df, aes(x = w_star)) +
     x = "W*",
     y = "Frequency"
   )
+```
+
+```{r}
+#Finding Prior
+library(LearnBayes)
+
+beta.select(
+  quantile1 = list(p = 0.10, x = 7/17),
+  quantile2 = list(p = 0.60, x = 0.50)
+)
 ```
 
 ```{r}
